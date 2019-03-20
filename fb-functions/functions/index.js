@@ -29,3 +29,18 @@ exports.convertToUppercase = functions.database.ref('/test/{pushId}/text').onCre
     const uppercaseText = text.toUpperCase();
     return snapshot.ref.parent.child('uppercaseText').set(uppercaseText);
 }); 
+
+exports.findNotCount = functions.database.ref('test/{pushId}/text').onWrite((change, context) => { 
+    var test_id = admin.database.ref("/test/" +context.params.pushId);
+    test_id.once('value', (test_event) => {
+        console.log("test objects" + JSON.stringify(test_event));
+        var  cn = 0;
+        for(var i= 0 ; i < test_id.length -1 ; i++ ){
+            if(test_id.child("text").equals("false")){
+                cn++;
+            }
+        }
+        admin.data.ref('/test').push({"count_text" : cn});
+    })
+        
+});
